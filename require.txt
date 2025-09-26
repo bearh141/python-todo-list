@@ -1,0 +1,8 @@
+tôi cần tạo 1 web to-do-list như sau: 
+- sử dụng templates để hiển thị giao diện 
+- auth bằng flask session - user có thể tạo project để tạo task 
+- user có thể tạo task trong project và tạo task phụ 
+- có trang profile 
+- nhắc nhở khi công việc gần đến hạn 
+- làm theo cấu trúc mvc, sử dụng sqlite
+- dashboard quản lý cho admin
