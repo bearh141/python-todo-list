@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - To-Do List{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<!-- Quản lý User -->
+<section>
+    <h3>Users</h3>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <tr>
+            <th>ID</th>
+            <th>User Name</th>
+            <th>Role</th>
+            <th>Joined</th>
+            <th>Actions</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}">Edit</a> |
+                <a href="{{ url_for('admin.delete_user', user_id=user.id) }}" onclick="return confirm('Delete this user?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+<hr>
+
+<!-- Quản lý Project -->
+<section>
+    <h3>Projects</h3>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+        {% for project in projects %}
+        <tr>
+            <td>{{ project.id }}</td>
+            <td>{{ project.name }}</td>
+            <td>{{ project.owner.fullname }}</td>
+            <td>{{ project.created_at.strftime('%Y-%m-%d') }}</td>
+            <td>
+                <a href="{{ url_for('admin.delete_project', project_id=project.id) }}" onclick="return confirm('Delete this project?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+<hr>
+
+<!-- Quản lý Task -->
+<section>
+    <h3>Tasks</h3>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Project</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.id }}</td>
+            <td>{{ task.title }}</td>
+            <td>{{ task.project.name }}</td>
+            <td>{% if task.due_date %}{{ task.due_date.strftime('%Y-%m-%d') }}{% else %}-{% endif %}</td>
+            <td>{{ task.status }}</td>
+            <td>
+                <a href="{{ url_for('admin.delete_task', task_id=task.id) }}" onclick="return confirm('Delete this task?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</section>
+
+{% endblock %}

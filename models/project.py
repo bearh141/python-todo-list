@@ -1,21 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from datetime import datetime
 from database import Base
 
 class Project(Base):
     __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String)
-    owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, onupdate=func.now())
+    title = Column(String(150), nullable=False)
+    description = Column(Text)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Khóa ngoại liên kết với bảng users
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    # Quan hệ
     owner = relationship("User", back_populates="projects")
-
-    # Quan hệ với bảng Task (một Project có nhiều Task)
-    tasks = relationship("Task", back_populates="project")
+    tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
