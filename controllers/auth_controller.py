@@ -20,7 +20,7 @@ def login():
             flash("Login successful!", "success")
 
             print(session)
-            return redirect(url_for("project.dashboard"))
+            return redirect(url_for("index"))
         else:
             flash("Invalid username or password", "danger")
 

@@ -1,15 +1,87 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block title %}Home - To-Do List{% endblock %} {%
+block content %}
+<div
+  class="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-indigo-50 to-white py-10 px-6"
+>
+  <div class="max-w-3xl w-full text-center">
+    <!-- Icon minh họa -->
+    <div class="flex justify-center mb-6">
+      <div
+        class="w-16 h-16 flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full shadow"
+      >
+        <i class="fas fa-tasks text-3xl"></i>
+      </div>
+    </div>
 
-{% block title %}Home - To-Do List{% endblock %}
+    <!-- Tiêu đề và mô tả -->
+    <h1 class="text-4xl font-bold text-gray-800 mb-3">
+      To-Do List Application
+    </h1>
+    <p class="text-gray-600 mb-8">
+      Ứng dụng quản lý công việc giúp bạn dễ dàng tạo, sắp xếp và theo dõi tiến
+      độ các nhiệm vụ hằng ngày một cách hiệu quả.
+    </p>
 
-{% block content %}
-<h1>Welcome to To-Do List App</h1>
-<p>Manage your projects and tasks efficiently.</p>
+    {% if not session.get('user_id') %}
+    <!-- Nút đăng nhập/đăng ký -->
+    <div class="flex flex-wrap gap-4 justify-center">
+      <a
+        href="{{ url_for('auth.login') }}"
+        class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 transition"
+      >
+        <i class="fas fa-sign-in-alt mr-2"></i> Đăng nhập
+      </a>
+      <a
+        href="{{ url_for('auth.register') }}"
+        class="px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg shadow hover:bg-gray-300 transition"
+      >
+        <i class="fas fa-user-plus mr-2"></i> Đăng ký
+      </a>
+    </div>
+    <p class="mt-6 text-sm text-gray-500 italic">
+      *Đăng nhập để bắt đầu quản lý công việc của bạn.*
+    </p>
+    {% else %}
+    <!-- Dashboard và card thống kê -->
+    <div class="space-y-6">
+      <a
+        href="{{ url_for('project.dashboard') }}"
+        class="inline-block px-8 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition"
+      >
+        <i class="fas fa-chart-line mr-2"></i> Vào Dashboard
+      </a>
 
-{% if not session.get('user_id') %}
-    <p><a href="{{ url_for('auth.login') }}">Login</a> or 
-       <a href="{{ url_for('auth.register') }}">Register</a> to get started.</p>
-{% else %}
-    <p>Go to your <a href="{{ url_for('project.dashboard') }}">Dashboard</a>.</p>
-{% endif %}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div
+          class="bg-white border rounded-lg shadow p-6 hover:shadow-md transition"
+        >
+          <i class="fas fa-lightbulb text-yellow-500 text-3xl mb-3"></i>
+          <h3 class="text-lg font-semibold mb-2">Tạo dự án</h3>
+          <p class="text-gray-600 text-sm">
+            Bắt đầu bằng việc tạo một dự án để nhóm các công việc lại với nhau.
+          </p>
+        </div>
+        <div
+          class="bg-white border rounded-lg shadow p-6 hover:shadow-md transition"
+        >
+          <i class="fas fa-tasks text-indigo-600 text-3xl mb-3"></i>
+          <h3 class="text-lg font-semibold mb-2">Thêm nhiệm vụ</h3>
+          <p class="text-gray-600 text-sm">
+            Thêm các nhiệm vụ cụ thể, đặt deadline để theo dõi tiến độ học tập.
+          </p>
+        </div>
+        <div
+          class="bg-white border rounded-lg shadow p-6 hover:shadow-md transition"
+        >
+          <i class="fas fa-chart-line text-green-600 text-3xl mb-3"></i>
+          <h3 class="text-lg font-semibold mb-2">Theo dõi tiến độ</h3>
+          <p class="text-gray-600 text-sm">
+            Xem tiến trình hoàn thành để quản lý thời gian hiệu quả hơn.
+          </p>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
