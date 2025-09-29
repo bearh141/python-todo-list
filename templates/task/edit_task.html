@@ -3,37 +3,43 @@
 {% block title %}Edit Task: {{ task.title }}{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-  <h2 class="text-2xl font-bold mb-6 text-center">Edit Task</h2>
-  <form method="POST">
-    <div class="mb-4">
-      <label for="title" class="block text-gray-700 font-bold mb-2">Title</label>
-      <input type="text" id="title" name="title" value="{{ task.title }}" class="w-full px-3 py-2 border rounded-lg" required maxlength="200">
+
+  <h1 class="text-2xl font-bold mb-6">Edit Task</h1>
+
+  <form method="POST" action="{{ url_for('task.edit_task', task_id=task.id) }}" class="space-y-4">
+    <div>
+      <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+      <input type="text" id="title" name="title" value="{{ task.title }}" class="w-full px-3 py-2 border rounded-lg" required>
     </div>
-    <div class="mb-4">
-      <label for="description" class="block text-gray-700 font-bold mb-2">Description (Optional)</label>
-      <textarea id="description" name="description" class="w-full px-3 py-2 border rounded-lg">{{ task.description }}</textarea>
+
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-700">Description (Optional)</label>
+      <textarea id="description" name="description" class="w-full px-3 py-2 border rounded-lg" rows="4">{{ task.description }}</textarea>
     </div>
-    <div class="mb-4">
-      <label for="due_date" class="block text-gray-700 font-bold mb-2">Due Date (Optional)</label>
+
+    <div>
+      <label for="due_date" class="block text-sm font-medium text-gray-700">Due Date (Optional)</label>
       <input type="date" id="due_date" name="due_date" value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}" class="w-full px-3 py-2 border rounded-lg">
     </div>
-    <div class="mb-4">
-      <label for="priority" class="block text-gray-700 font-bold mb-2">Priority</label>
+
+    <div>
+      <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
       <select id="priority" name="priority" class="w-full px-3 py-2 border rounded-lg">
-        <option value="low" {% if task.priority == 'low' %}selected{% endif %}>Low</option>
-        <option value="medium" {% if task.priority == 'medium' %}selected{% endif %}>Medium</option>
-        <option value="high" {% if task.priority == 'high' %}selected{% endif %}>High</option>
+        <option value="low" {{ 'selected' if task.priority == 'low' else '' }}>Low</option>
+        <option value="medium" {{ 'selected' if task.priority == 'medium' else '' }}>Medium</option>
+        <option value="high" {{ 'selected' if task.priority == 'high' else '' }}>High</option>
       </select>
     </div>
-    <div class="mb-4">
-      <label for="tags" class="block text-gray-700 font-bold mb-2">Tags (comma-separated)</label>
-      <input type="text" id="tags" name="tags" value="{{ ','.join(tag.name for tag in task.tags) }}" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., urgent,bug">
+
+    <div>
+      <label for="tags" class="block text-sm font-medium text-gray-700">Tags (comma-separated)</label>
+      <input type="text" id="tags" name="tags" value="{{ tags_string }}" class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., urgent,bug">
     </div>
-    <div class="flex justify-between">
-      <a href="{{ url_for('project.view_project', project_id=task.project_id) }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</a>
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Update Task</button>
+
+    <div class="flex space-x-4">
+      <a href="{{ url_for('project.view_project', project_id=task.project_id) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">Cancel</a>
+      <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Update Task</button>
     </div>
   </form>
-</div>
+
 {% endblock %}

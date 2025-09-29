@@ -153,11 +153,11 @@ def edit_task(task_id):
 
         if not title:
             flash("Task title is required.", "error")
-            return render_template("task/edit_task.html", task=task)
+            return render_template("task/edit_task.html", task=task, tags_string=','.join(tag.name for tag in task.tags))
 
         if db.query(Task).filter_by(title=title, project_id=task.project_id).filter(Task.id != task_id).first():
             flash("Task title already exists in this project.", "error")
-            return render_template("task/edit_task.html", task=task)
+            return render_template("task/edit_task.html", task=task, tags_string=','.join(tag.name for tag in task.tags))
 
         due_date = datetime.strptime(due_date_str, "%Y-%m-%d") if due_date_str else None
         task.title = title
@@ -176,7 +176,9 @@ def edit_task(task_id):
         flash("Task updated successfully!", "success")
         return redirect(url_for("project.view_project", project_id=task.project_id))
 
-    return render_template("task/edit_task.html", task=task)
+    # Prepare the tags string for the GET request
+    tags_string = ','.join(tag.name for tag in task.tags) if task.tags else ''
+    return render_template("task/edit_task.html", task=task, tags_string=tags_string)
 
 def update_subtasks_status(task, status):
     """Cập nhật đệ quy trạng thái hoàn thành của tất cả các sub-task."""
