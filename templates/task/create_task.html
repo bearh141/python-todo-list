@@ -25,7 +25,7 @@
       <input type="date" name="due_date" class="mt-1 w-full border rounded-md px-3 py-2">
     </div>
 
-    <!-- Parent Task (optional, nếu muốn tạo subtask) -->
+    <!-- Parent Task -->
     {% if parent_task %}
     <input type="hidden" name="parent_id" value="{{ parent_task.id }}">
     <p class="text-sm text-gray-500">This will be created under parent task: <b>{{ parent_task.title }}</b></p>

@@ -3,78 +3,82 @@
 {% block title %}My Dashboard{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-  <h1 class="text-3xl font-bold text-gray-800">My Projects</h1>
-  <a href="{{ url_for('project.create_project') }}"
-     class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition flex items-center gap-2">
-    <i class="fas fa-plus"></i> New Project
-  </a>
-</div>
+<div class="max-w-4xl mx-auto py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">My Projects</h1>
+    <a href="{{ url_for('project.create_project') }}"
+       class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition flex items-center gap-2">
+      <i class="fas fa-plus"></i> New Project
+    </a>
+  </div>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="mb-4 space-y-2">
-      {% for category, message in messages %}
-        <div class="px-4 py-3 rounded text-sm
-          {% if category == 'error' %} bg-red-100 text-red-700
-          {% elif category == 'success' %} bg-green-100 text-green-700
-          {% else %} bg-blue-100 text-blue-700 {% endif %}">
-          {{ message }}
+  <div class="mb-6">
+    <form class="flex space-x-4">
+      <input type="text" name="search" value="{{ search_query }}" placeholder="Search projects..." class="px-3 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <button type="submit" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition">Search</button>
+    </form>
+  </div>
+
+  {% if projects %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for project in projects %}
+        <div class="bg-white border rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col">
+          <div class="p-6 flex-grow">
+            <h2 class="text-xl font-bold text-gray-800 mb-2">{{ project.title }}</h2>
+            <p class="text-gray-600 text-sm mb-4 min-h-[40px]">{{ project.description or 'No description.' }}</p>
+            
+            <div class="mb-2">
+              <div class="flex justify-between mb-1">
+                <span class="text-sm font-medium text-gray-700">Progress</span>
+                <span class="text-sm font-medium text-indigo-700">{{ project.progress }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div class="bg-indigo-600 h-2.5 rounded-full progress-bar"
+                     data-progress="{{ project.progress }}"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-4 border-t rounded-b-xl flex justify-between items-center">
+            <span class="text-xs text-gray-500">
+              <i class="fas fa-tasks mr-1"></i> {{ project.tasks|length }} tasks
+            </span>
+            <div class="flex space-x-2">
+              <a href="{{ url_for('project.view_project', project_id=project.id) }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+                View Details <i class="fas fa-arrow-right ml-1"></i>
+              </a>
+              <a href="{{ url_for('project.edit_project', project_id=project.id) }}" class="text-sm font-semibold text-yellow-600 hover:text-yellow-800">
+                Edit <i class="fas fa-edit ml-1"></i>
+              </a>
+              <form method="POST" action="{{ url_for('project.delete_project', project_id=project.id) }}">
+                <button type="submit" class="text-sm font-semibold text-red-600 hover:text-red-800" onclick="return confirm('Are you sure?')">
+                  Delete <i class="fas fa-trash ml-1"></i>
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       {% endfor %}
     </div>
-  {% endif %}
-{% endwith %}
-
-{% if projects %}
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  {% for project in projects %}
-  <div class="bg-white border rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col">
-    <div class="p-6 flex-grow">
-      <h2 class="text-xl font-bold text-gray-800 mb-2">{{ project.title }}</h2>
-      <p class="text-gray-600 text-sm mb-4 min-h-[40px]">{{ project.description or 'No description.' }}</p>
-      
-      <div class="mb-2">
-        <div class="flex justify-between mb-1">
-          <span class="text-sm font-medium text-gray-700">Progress</span>
-          <span class="text-sm font-medium text-indigo-700">{{ project.progress }}%</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div class="bg-indigo-600 h-2.5 rounded-full progress-bar"
-               data-progress="{{ project.progress }}"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-gray-50 p-4 border-t rounded-b-xl flex justify-between items-center">
-      <span class="text-xs text-gray-500">
-        <i class="fas fa-tasks mr-1"></i> {{ project.tasks|length }} tasks
-      </span>
-      <a href="{{ url_for('project.view_project', project_id=project.id) }}" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
-        View Details <i class="fas fa-arrow-right ml-1"></i>
+  {% else %}
+    <div class="text-center bg-white border rounded-lg p-12">
+      <i class="fas fa-folder-open text-4xl text-gray-400 mb-4"></i>
+      <h3 class="text-xl font-semibold text-gray-700">No projects yet!</h3>
+      <p class="text-gray-500 mt-2">Get started by creating your first project.</p>
+      <a href="{{ url_for('project.create_project') }}"
+         class="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 transition">
+        Create Project
       </a>
     </div>
-  </div>
-  {% endfor %}
-</div>
-{% else %}
-<div class="text-center bg-white border rounded-lg p-12">
-    <i class="fas fa-folder-open text-4xl text-gray-400 mb-4"></i>
-    <h3 class="text-xl font-semibold text-gray-700">No projects yet!</h3>
-    <p class="text-gray-500 mt-2">Get started by creating your first project.</p>
-    <a href="{{ url_for('project.create_project') }}"
-       class="mt-4 inline-block px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 transition">
-      Create Project
-    </a>
-</div>
-{% endif %}
+  {% endif %}
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".progress-bar").forEach(el => {
-      const val = el.dataset.progress;
-      el.style.width = val + "%";
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".progress-bar").forEach(el => {
+        const val = el.dataset.progress;
+        el.style.width = val + "%";
+      });
     });
-  });
-</script>
+  </script>
+</div>
 {% endblock %}

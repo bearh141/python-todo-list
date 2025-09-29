@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}Create New Project{% endblock %}
+{% block title %}Edit Project: {{ project.title }}{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-  <h2 class="text-2xl font-bold mb-6 text-center">Create a New Project</h2>
-  <form method="POST" action="{{ url_for('project.create_project') }}">
+  <h2 class="text-2xl font-bold mb-6 text-center">Edit Project</h2>
+  <form method="POST">
     <div class="mb-4">
       <label for="title" class="block text-gray-700 font-bold mb-2">Project Title</label>
-      <input type="text" id="title" name="title" class="w-full px-3 py-2 border rounded-lg" required maxlength="150">
+      <input type="text" id="title" name="title" value="{{ project.title }}" class="w-full px-3 py-2 border rounded-lg" required maxlength="150">
     </div>
     <div class="mb-4">
       <label for="description" class="block text-gray-700 font-bold mb-2">Description (Optional)</label>
-      <textarea id="description" name="description" class="w-full px-3 py-2 border rounded-lg"></textarea>
+      <textarea id="description" name="description" class="w-full px-3 py-2 border rounded-lg">{{ project.description }}</textarea>
     </div>
     <div class="flex justify-between">
       <a href="{{ url_for('project.dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">Cancel</a>
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Create Project</button>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Update Project</button>
     </div>
   </form>
 </div>

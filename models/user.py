@@ -9,11 +9,13 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(80), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=True)
     password_hash = Column(String(200), nullable=False)
-    is_admin = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.now())
+    avatar_url = Column(String(200), nullable=True)
+    is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    theme = Column(String(20), default="light")
 
-    # Quan hệ
     projects = relationship("Project", back_populates="owner", cascade="all, delete-orphan")
     tasks = relationship("Task", back_populates="user", cascade="all, delete-orphan")
 

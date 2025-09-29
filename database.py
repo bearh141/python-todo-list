@@ -15,10 +15,7 @@ def get_db():
     try:
         yield db
     except SQLAlchemyError as e:
-        # Xử lý lỗi SQLAlchemy
         print(f"Lỗi cơ sở dữ liệu: {e}")
-        # Bạn có thể raise lại lỗi để xử lý ở tầng cao hơn nếu cần
         raise
     finally:
-        # Đảm bảo phiên kết nối luôn được đóng
         db.close()
