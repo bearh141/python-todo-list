@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Create Task{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white shadow rounded-lg p-6">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Create New Task</h1>
+
+  <form method="POST" action="{{ url_for('task.create_task', project_id=project.id) }}" class="space-y-4">
+    <!-- Title -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Title</label>
+      <input type="text" name="title" class="mt-1 w-full border rounded-md px-3 py-2" required>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Description</label>
+      <textarea name="description" rows="3" class="mt-1 w-full border rounded-md px-3 py-2"></textarea>
+    </div>
+
+    <!-- Due Date -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Due Date</label>
+      <input type="date" name="due_date" class="mt-1 w-full border rounded-md px-3 py-2">
+    </div>
+
+    <!-- Parent Task (optional, nếu muốn tạo subtask) -->
+    {% if parent_task %}
+    <input type="hidden" name="parent_id" value="{{ parent_task.id }}">
+    <p class="text-sm text-gray-500">This will be created under parent task: <b>{{ parent_task.title }}</b></p>
+    {% endif %}
+
+    <!-- Buttons -->
+    <div class="flex justify-end gap-2">
+      <a href="{{ url_for('project.view_project', project_id=project.id) }}"
+         class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+        Cancel
+      </a>
+      <button type="submit"
+              class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition">
+        <i class="fas fa-plus mr-2"></i>Create Task
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

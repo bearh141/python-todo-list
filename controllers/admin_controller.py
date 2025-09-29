@@ -4,7 +4,6 @@ from models.user import User
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-# Dashboard quản lý user
 @admin_bp.route("/")
 def admin_dashboard():
     if not session.get("is_admin"):
@@ -12,10 +11,8 @@ def admin_dashboard():
 
     db = next(get_db())
     users = db.query(User).all()
-    return render_template("admin/dashboard.html", users=users)
+    return render_template("admin/admin_dashboard.html", users=users)
 
-
-# Edit user (chỉ đổi username hoặc quyền admin)
 @admin_bp.route("/edit/<int:user_id>", methods=["GET", "POST"])
 def edit_user(user_id):
     if not session.get("is_admin"):
@@ -37,8 +34,6 @@ def edit_user(user_id):
 
     return render_template("admin/edit_user.html", user=user)
 
-
-# Delete user
 @admin_bp.route("/delete/<int:user_id>")
 def delete_user(user_id):
     if not session.get("is_admin"):
@@ -53,7 +48,6 @@ def delete_user(user_id):
 
     return redirect(url_for("admin.admin_dashboard"))
 
-# Create new user
 @admin_bp.route("/create", methods=["GET", "POST"])
 def create_user():
     if not session.get("is_admin"):
@@ -70,13 +64,11 @@ def create_user():
             flash("Username and password are required", "error")
             return redirect(url_for("admin.create_user"))
 
-        # Kiểm tra trùng username
         existing = db.query(User).filter_by(username=username).first()
         if existing:
             flash("Username already exists!", "error")
             return redirect(url_for("admin.create_user"))
 
-        # Tạo user mới
         new_user = User(username=username, is_admin=is_admin)
         new_user.set_password(password)
         

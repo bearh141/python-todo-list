@@ -105,7 +105,6 @@
 
     <!-- Script -->
     <script>
-      // Toggle dropdown avatar
       const btn = document.getElementById("avatarBtn");
       const menu = document.getElementById("dropdownMenu");
       if (btn) {
@@ -118,6 +117,25 @@
           }
         });
       }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.toggle-task').forEach(checkbox => {
+          checkbox.addEventListener('change', () => {
+            const taskId = checkbox.getAttribute('data-task-id');
+            fetch(`/task/toggle/${taskId}`, { method: 'GET' })
+              .then(response => response.text())
+              .then(() => location.reload());
+          });
+        });
+
+        document.querySelectorAll('a[data-task-id]').forEach(link => {
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const taskId = link.getAttribute('data-task-id');
+            window.location.href = `/task/create_subtask/${taskId}`; 
+          });
+        });
+      });
     </script>
   </body>
 </html>

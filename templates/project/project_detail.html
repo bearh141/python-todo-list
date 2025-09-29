@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }}{% endblock %}
+
+{% block content %}
+
+{% macro render_task(task, project_id, level=0) %}
+  {# Xử lý deadline #}
+  {% if task.due_date %}
+    {% if task.due_date.__class__.__name__ == 'datetime' %}
+      {% set deadline = task.due_date.date() %}
+    {% else %}
+      {% set deadline = task.due_date %}
+    {% endif %}
+  {% else %}
+    {% set deadline = None %}
+  {% endif %}
+
+  {% set today = now.date() %}
+  {% set days_diff = (deadline - today).days if deadline else 999 %}
+
+  {# Style mặc định #}
+  {% set border_color = 'border-gray-200' %}
+  {% set bg_color = 'bg-white' %}
+  {% set border_style = 'border-2' %}
+  {% set shadow_class = '' %}
+
+  {# Phân biệt task chính và subtask #}
+  {% if level == 0 %}
+    {% set bg_color = 'bg-blue-50' %}
+    {% set border_style = 'border-4' %}
+    {% set shadow_class = 'shadow-lg' %}
+  {% else %}
+    {% if level == 1 %}
+      {% set bg_color = 'bg-gray-50' %}
+    {% elif level == 2 %}
+      {% set bg_color = 'bg-gray-100' %}
+    {% else %}
+      {% set bg_color = 'bg-gray-200' %}
+    {% endif %}
+  {% endif %}
+
+  {# Đổi màu border theo deadline #}
+  {% if not task.completed and deadline %}
+    {% if days_diff < 0 %}
+      {% set border_color = 'border-red-400' %}
+    {% elif days_diff == 0 %}
+      {% set border_color = 'border-yellow-400' %}
+    {% elif days_diff == 1 %}
+      {% set border_color = 'border-yellow-300' %}
+    {% elif days_diff < 7 %}
+      {% set border_color = 'border-yellow-200' %}
+    {% endif %}
+  {% endif %}
+
+  {# Thụt lề theo level #}
+  {% set margin_class = 'ml-' ~ (level * 4) %}
+
+  <div class="mb-4 p-4 {{ bg_color }} {{ border_style }} {{ border_color }} rounded-lg {{ margin_class }} {{ shadow_class }}">
+    <div class="flex items-start cursor-pointer" 
+         data-task-id="{{ task.id }}" 
+         onclick="toggleSubtasks(this)">
+      <div class="flex-1">
+        <div class="flex items-center">
+          <h3 class="text-lg font-semibold">{{ task.title }}</h3>
+          {% if task.subtasks_list %}
+            <span class="ml-2 px-2 py-1 text-xs bg-blue-200 text-blue-800 rounded-full">
+              {{ task.subtasks_list|length }} Subtask{% if task.subtasks_list|length > 1 %}s{% endif %}
+            </span>
+          {% endif %}
+        </div>
+        <p class="text-gray-600">{{ task.description }}</p>
+
+        {% if task.due_date %}
+          <p class="text-sm text-gray-500">
+            Due: {{ task.due_date.strftime('%Y-%m-%d') if task.due_date.__class__.__name__ == 'datetime' else task.due_date }}
+            {% if not task.completed %}
+              {% if days_diff < 0 %} (Overdue)
+              {% elif days_diff == 0 %} (Today)
+              {% elif days_diff == 1 %} (Tomorrow)
+              {% elif days_diff < 7 %} (In {{ days_diff }} days)
+              {% endif %}
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="ml-6 mt-2">
+      <form action="{{ url_for('task.delete_task', task_id=task.id) }}" method="POST" style="display:inline;">
+        <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure?')">Delete</button>
+      </form>
+      {% if level == 0 %} 
+        <a href="#" 
+           class="text-blue-500 hover:text-blue-700 ml-4" 
+           data-task-id="{{ task.id }}" 
+           data-project-id="{{ project_id }}">Add Sub-task</a>
+      {% endif %}
+    </div>
+
+    {% if task.subtasks_list %}
+      <div class="subtasks hidden mt-2">
+        {% for subtask in task.subtasks_list %}
+          {{ render_task(subtask, project_id, level + 1) }}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+<div class="container mx-auto p-4">
+  <div class="flex justify-between items-center mb-4">
+    <a href="{{ url_for('project.dashboard') }}" class="text-blue-500 hover:text-blue-700">Back to Projects</a>
+    <h2 class="text-2xl font-bold">{{ project.title }}</h2>
+    {% if session.get('is_admin') or session['user_id'] == project.owner_id %}
+      <form action="{{ url_for('project.delete_project', project_id=project.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this project?')">
+        <button type="submit" class="text-red-500 hover:text-red-700">Delete Project</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <p class="text-gray-600 mb-4">{{ project.description }}</p>
+
+  <h3 class="text-xl font-semibold mb-2">Add New Task</h3>
+  <form action="{{ url_for('task.create_task', project_id=project.id) }}" method="POST" class="mb-4">
+    <input type="text" name="title" placeholder="Title" class="border p-2 mb-2 w-full" required>
+    <input type="date" name="due_date" class="border p-2 mb-2 w-full">
+    <textarea name="description" placeholder="Description (Optional)" class="border p-2 mb-2 w-full"></textarea>
+    <input type="hidden" name="parent_id" value="">
+    <button type="submit" class="bg-blue-500 text-white p-2 rounded">Add Task</button>
+  </form>
+
+  {% if tasks %}
+    {% for task in tasks %}
+      {{ render_task(task, project.id) }}
+    {% endfor %}
+  {% else %}
+    <p class="text-gray-500">This project has no tasks yet. Add one above to get started!</p>
+  {% endif %}
+</div>
+
+<script>
+  function toggleSubtasks(element) {
+    const container = element.closest('div.mb-4');
+    if (!container) return;
+    const subtasks = container.querySelector('.subtasks');
+    if (subtasks) {
+      subtasks.classList.toggle('hidden');
+    }
+  }
+</script>
+
+{% endblock %}

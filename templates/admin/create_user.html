@@ -1,71 +1,52 @@
-{% extends "base.html" %} {% block title %}Create User{% endblock %} {% block
-content %}
-<div class="max-w-lg mx-auto bg-white p-6 rounded-xl shadow">
-  <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-    <i class="fas fa-user-plus text-indigo-600"></i>
-    Create New User
-  </h2>
+{% extends "base.html" %}
+{% block title %}Create User{% endblock %}
+{% block content %}
 
-  <!-- Hiển thị flash message -->
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %}
-  <div class="mb-4">
-    {% for category, message in messages %}
-    <div
-      class="px-4 py-2 rounded {% if category == 'error' %} bg-red-100 text-red-700 {% elif category == 'success' %} bg-green-100 text-green-700 {% else %} bg-gray-100 text-gray-700 {% endif %}"
-    >
-      {{ message }}
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %} {% endwith %}
+<div class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-4">Create New User</h1>
 
-  <form method="POST" class="space-y-4">
-    <div>
-      <label class="block text-sm font-medium">Username</label>
-      <input
-        type="text"
-        name="username"
-        class="mt-1 block w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 focus:border-indigo-500"
-        required
-      />
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-4">
+        {% for category, message in messages %}
+          <div class="p-2 {{ 'bg-red-100 text-red-700' if category == 'error' else 'bg-green-100 text-green-700' }} rounded">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" action="">
+    <div class="mb-4">
+      <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+      <input type="text" id="username" name="username" class="mt-1 p-2 border rounded w-full" required>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium">Password</label>
-      <input
-        type="password"
-        name="password"
-        class="mt-1 block w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 focus:border-indigo-500"
-        required
-      />
+    <div class="mb-4">
+      <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+      <input type="password" id="password" name="password" class="mt-1 p-2 border rounded w-full" required>
     </div>
 
-    <div>
-      <label class="block text-sm font-medium">Role</label>
-      <select
-        name="is_admin"
-        class="mt-1 block w-full border rounded px-3 py-2 focus:ring focus:ring-indigo-200 focus:border-indigo-500"
-      >
-        <option value="0">User</option>
-        <option value="1">Admin</option>
-      </select>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700">Role</label>
+      <div class="mt-1">
+        <label class="inline-flex items-center">
+          <input type="radio" name="is_admin" value="0" checked class="form-radio">
+          <span class="ml-2">User</span>
+        </label>
+        <label class="inline-flex items-center ml-4">
+          <input type="radio" name="is_admin" value="1" class="form-radio">
+          <span class="ml-2">Admin</span>
+        </label>
+      </div>
     </div>
 
-    <div class="flex justify-end gap-2">
-      <a
-        href="{{ url_for('admin.admin_dashboard') }}"
-        class="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 flex items-center gap-1"
-      >
-        <i class="fas fa-arrow-left"></i> Cancel
-      </a>
-      <button
-        type="submit"
-        class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 flex items-center gap-1"
-      >
-        <i class="fas fa-save"></i> Create
-      </button>
+    <div class="flex space-x-4">
+      <a href="{{ url_for('admin.admin_dashboard') }}" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</a>
+      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Create</button>
     </div>
   </form>
 </div>
+
 {% endblock %}
